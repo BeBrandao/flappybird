@@ -1,7 +1,7 @@
 const sprites = new Image();
 sprites.src = './sprites.png';
-// const som_punch = new Audio();
-// som_punch.src = './som/punch.wav';
+ const som_punch = new Audio();
+som_punch.src = './som/punch.wav';
 
 const canvas = document.querySelector('#game-canvas');
 const contexto = canvas.getContext('2d');
@@ -48,13 +48,13 @@ const flappyBird = {
 
 
         if (flappyBird.y < flappyBird.limiteSuperior) {
-            som_punch.play();
             flappyBird.y = flappyBird.limiteSuperior;
             flappyBird.velocidade = 0
         }
         
         const limiteInferior = canvas.height - chao.altura;
         if (flappyBird.y + flappyBird.altura >= limiteInferior){
+            som_punch.play();
             flappyBird.y = limiteInferior - flappyBird.altura;
             reiniciaJogo();
         }
