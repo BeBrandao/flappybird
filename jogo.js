@@ -1,6 +1,6 @@
 const sprites = new Image();
 sprites.src = './sprites.png';
- const som_punch = new Audio();
+const som_punch = new Audio();
 som_punch.src = './som/punch.wav';
 
 const canvas = document.querySelector('#game-canvas');
