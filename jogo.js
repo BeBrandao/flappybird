@@ -1,7 +1,7 @@
 const sprites = new Image();
 sprites.src = './sprites.png';
 const som_punch = new Audio();
-som_punch.src = './som/punch.wav';
+som_punch.src = './punch.wav';
 
 const canvas = document.querySelector('#game-canvas');
 const contexto = canvas.getContext('2d');
@@ -96,6 +96,10 @@ const cenario = {
             cenario.x + 276, cenario.y,
             cenario.largura, cenario.altura,
         );
+    },
+    atualiza(){
+        cenario.x -= 0.5;
+        cenario.x = cenario.x % (cenario.largura / 2);
     }
 }
 
@@ -123,6 +127,10 @@ const chao = {
             chao.x + 224, chao.y,
             chao.largura, chao.altura,
         );
+    },
+    atualiza(){
+        chao.x -= 1;
+        chao.x = chao.x % (chao.largura / 2);
     }
 }
 
@@ -164,7 +172,9 @@ const TelaJogo = {
 
     desenha(){
         cenario.desenha();
+        cenario.atualiza();
         chao.desenha();
+        chao.atualiza();
         flappyBird.desenha();
         flappyBird.atualiza();
     },
