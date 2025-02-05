@@ -3,6 +3,8 @@ sprites.src = './sprites.png';
 const som_punch = new Audio();
 som_punch.src = './punch.wav';
 
+let animation_frame = 0;
+
 const canvas = document.querySelector('#game-canvas');
 const contexto = canvas.getContext('2d');
 
@@ -66,6 +68,7 @@ const flappyBird = {
 };
 
 function reiniciaJogo() {
+    canos.pares = []
     flappyBird.y = 50;
     flappyBird.velocidade = 0;
     telaAtiva = TelaInicio;
@@ -134,6 +137,71 @@ const chao = {
     }
 }
 
+const canos = {
+ 
+    largura: 52,
+    altura: 400,
+    ceu: {
+        spriteX: 52,
+        spriteY: 169,
+        x: 120,
+        y: -150
+    },
+    chao: {
+        spriteX: 0,
+        spriteY: 169,
+    },
+    pares: [],
+    espacamentoEntreCanos: 120,
+    desenha(){
+        
+        for (i=0;i<canos.pares.length;i++){
+            canos.ceu.x = canos.pares[i].x;
+            canos.ceu.y = canos.pares[i].y;
+            contexto.drawImage(
+                sprites,
+                canos.ceu.spriteX, canos.ceu.spriteY,
+                canos.largura, canos.altura,
+                canos.ceu.x, canos.ceu.y,
+                canos.largura, canos.altura,
+                )
+                const canoChaoX = canos.ceu.x;
+                const canoChaoY = canos.altura + canos.espacamentoEntreCanos + canos.ceu.y;
+            contexto.drawImage(
+                sprites,
+                canos.chao.spriteX, canos.chao.spriteY,
+                canos.largura, canos.altura,
+                canoChaoX, canoChaoY,
+                canos.largura, canos.altura,
+                )
+        }
+    },
+
+    atualiza(){
+        for(i=0;i<canos.pares.length;i++){
+            const par = canos.pares[i];
+            par.x -= 2;
+
+            if(par.x + canos.largura <= 0){
+                canos.pares.shift();
+            }
+
+            if(fazColisaoObstaculo(par)){
+                som_punch.play();
+                reiniciaJogo();
+            }
+        }
+        const passou100Frames = (animation_frame % 100 === 0);
+        if(passou100Frames) {
+            const novoPar = {
+                x: canvas.width,
+                y: -150 * (Math.random() + 1),
+            }
+            canos.pares.push(novoPar);
+        }
+    }
+}
+
 const inicio = {
 
     spriteX: 130,
@@ -177,11 +245,30 @@ const TelaJogo = {
         chao.atualiza();
         flappyBird.desenha();
         flappyBird.atualiza();
+        canos.desenha();
+        canos.atualiza();
     },
 
     click(){
         flappyBird.sobe();
     }
+}
+
+function fazColisaoObstaculo(par){
+    if(flappyBird.x >= par.x){
+        const alturaCabecaFlappy = flappyBird.y;
+        const alturaPeFlappy = flappyBird.y + flappyBird.altura;
+        const bocaCanoCeuY = par.y + canos.altura;
+        const bocaCanoChaoY = par.y + canos.altura + canos.espacamentoEntreCanos;
+        if(alturaCabecaFlappy <= bocaCanoCeuY){
+            return true;
+        }
+        if(alturaPeFlappy >= bocaCanoChaoY){
+            return true;
+        }
+    }
+
+    return false;
 }
 
 var telaAtiva = TelaInicio;
@@ -198,6 +285,7 @@ function loop(){
     contexto.fillRect(0,0, canvas.width, canvas.height)
     telaAtiva.desenha()
     requestAnimationFrame(loop);
+    animation_frame += 1;
 }
 
 loop();
