@@ -3,10 +3,32 @@ sprites.src = './sprites.png';
 const som_punch = new Audio();
 som_punch.src = './punch.wav';
 
+const novaFonte = new FontFace('FlappyBirdFont', 'url(./flappy-bird-font.ttf)');
+novaFonte.load().then((font) => {
+  document.fonts.add(font);
+});
+
 let animation_frame = 0;
 
 const canvas = document.querySelector('#game-canvas');
 const contexto = canvas.getContext('2d');
+
+const contador = {
+    x: 142.5,
+    y: 50,
+    contador: 0,
+
+    desenha() {
+        contexto.fillStyle = 'white';
+        contexto.font = '30px FlappyBirdFont';
+        contexto.fillText(`${this.contador}`, this.x, this.y);
+    },
+
+    incrementa() {
+        this.contador++;
+    }
+
+}
 
 const flappyBird = {
 
@@ -71,6 +93,7 @@ function reiniciaJogo() {
     canos.pares = []
     flappyBird.y = 50;
     flappyBird.velocidade = 0;
+    contador.contador = 0;
     telaAtiva = TelaInicio;
 }
 
@@ -190,12 +213,18 @@ const canos = {
                 som_punch.play();
                 reiniciaJogo();
             }
+
+            if(par.x + canos.largura <= flappyBird.x && !par.contou) {
+                contador.incrementa();
+                par.contou = true; // Marcar que o cano já foi contado
+            }
         }
         const passou100Frames = (animation_frame % 100 === 0);
         if(passou100Frames) {
             const novoPar = {
                 x: canvas.width,
                 y: -150 * (Math.random() + 1),
+                contou: false,
             }
             canos.pares.push(novoPar);
         }
@@ -247,6 +276,7 @@ const TelaJogo = {
         flappyBird.atualiza();
         canos.desenha();
         canos.atualiza();
+        contador.desenha();
     },
 
     click(){
