@@ -13,21 +13,29 @@ let animation_frame = 0;
 const canvas = document.querySelector('#game-canvas');
 const contexto = canvas.getContext('2d');
 
-const contador = {
-    x: 142.5,
+const placar = {
+    x: 75,
     y: 50,
     contador: 0,
 
     desenha() {
         contexto.fillStyle = 'white';
         contexto.font = '30px FlappyBirdFont';
-        contexto.fillText(`${this.contador}`, this.x, this.y);
+        contexto.fillText(`Pontuação: ${placar.contador}`, placar.x, placar.y);
     },
 
     incrementa() {
-        this.contador++;
-    }
+        placar.contador++;
+    },
 
+    atualiza(){
+        const intervaloDeFrames = 20;
+        const passouOIntervalo = animation_frame % intervaloDeFrames === 0;
+
+        if(passouOIntervalo) {
+            placar.contador += 1
+        }
+    }
 }
 
 const flappyBird = {
@@ -93,8 +101,8 @@ function reiniciaJogo() {
     canos.pares = []
     flappyBird.y = 50;
     flappyBird.velocidade = 0;
-    contador.contador = 0;
-    telaAtiva = TelaInicio;
+    placar.contador = 0;
+    telaAtiva = TelaGameOver;
 }
 
 const cenario = {
@@ -215,7 +223,7 @@ const canos = {
             }
 
             if(par.x + canos.largura <= flappyBird.x && !par.contou) {
-                contador.incrementa();
+                placar.incrementa();
                 par.contou = true; // Marcar que o cano já foi contado
             }
         }
@@ -276,11 +284,41 @@ const TelaJogo = {
         flappyBird.atualiza();
         canos.desenha();
         canos.atualiza();
-        contador.desenha();
+        placar.desenha();
+        placar.atualiza();
     },
 
     click(){
         flappyBird.sobe();
+    }
+}
+
+const GameOver = {
+    
+    spriteX: 134,
+    spriteY: 153,
+    largura: 226,
+    altura: 200,
+    x: 50,
+    y: 70,
+
+    desenha(){
+        contexto.drawImage(
+            sprites,
+            GameOver.spriteX,GameOver.spriteY,
+            GameOver.largura,GameOver.altura,
+            GameOver.x,GameOver.y,
+            GameOver.largura,GameOver.altura,
+        );
+    }
+}
+
+const TelaGameOver = {
+    desenha(){
+        GameOver.desenha();
+    },
+    click(){
+        telaAtiva = TelaJogo;
     }
 }
 
@@ -319,4 +357,3 @@ function loop(){
 }
 
 loop();
-
